@@ -1,5 +1,12 @@
-﻿import java.util.Arrays;
+/**
+ *
+ */
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A knights tour:
@@ -95,7 +102,8 @@ public class KnightBoard {
             }
             return col + dcol[order[i]];
         }
-
+        
+//        /* Not Used. Manual sorting instead.
         public void sortMoveOrder() {
           // System.out.println("Sorting...");
             Integer[] o = new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -108,6 +116,7 @@ public class KnightBoard {
             this.order = order;
             // System.out.println("End Sorting");
         }
+
 
         private class movesComparator implements Comparator<Integer> {
 
@@ -126,6 +135,7 @@ public class KnightBoard {
             }
 
         }
+//        */
 
     }
 
@@ -327,8 +337,9 @@ public class KnightBoard {
         checkBoard();
         checkInputs(row, col);
         fillMoves();
-         return fastNextMove(row, col, 1);
+         return fastNextMove1(row, col, 1);
     }
+
 
     public boolean fastNextMove(int row, int col, int level) {
 
@@ -364,6 +375,82 @@ public class KnightBoard {
         return false;
     }
 
+    public boolean fastNextMove1(int row, int col, int level) {
+
+        if (!addKnightWithMoves(row, col, level)) {
+            return false;
+        }
+
+        int nextLevel = level + 1;
+
+        if (nextLevel < maxLevel) {
+            Cors cors = new Cors(row, col);
+            List<int[]> order = new ArrayList<>();
+            for (int i = 0; i < 8; i++) {
+                int corRow = cors.getRow(i);
+                int corCol = cors.getCol(i);
+                if (isCorInBound(corRow, corCol)) {
+                    int [] element = new int[] {i, moves[corRow][corCol]};
+                    
+                    if (order.size() == 0) {
+                        order.add(element);
+                    } else {
+                        // insertion sort
+                        for (int j = 0, s = order.size(); j < s; j++) {
+                            int nextMoveCount = order.get(j)[1];
+                            int curMoveCount = element[1];
+                            //Stable vs. non-stable sort comparison
+                            //1894509645
+                            //6704765
+                            if (curMoveCount < nextMoveCount || j == s - 1) {
+                                order.add(j, element);
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // cor is not in bound, ignore it
+                    continue;
+                }
+            }
+//            cors.sortMoveOrder();
+            int nextRow, nextCol;
+//            for (int i = 0; i < 8; i++) {
+//                nextRow = cors.getRow(i);
+//                nextCol = cors.getCol(i);
+//              // System.out.println("cor: " + nextRow + "," + nextCol + "at level" + level);
+//                // System.out.println(solutions);
+////               System.out.println(this);
+//                if (nextLevel < maxLevel) {
+//                    if (fastNextMove(nextRow, nextCol, nextLevel)) {
+//                        return true; // ignore false value;
+//                    }
+//                }
+//            }
+            
+            for (int[] pos : order) {
+                int i = pos[0];
+                nextRow = cors.getRow(i);
+                nextCol = cors.getCol(i);
+              // System.out.println("cor: " + nextRow + "," + nextCol + "at level" + level);
+                // System.out.println(solutions);
+//               System.out.println(this);
+                if (nextLevel < maxLevel) {
+                    if (fastNextMove(nextRow, nextCol, nextLevel)) {
+                        return true; // ignore false value;
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
+
+        // finished with all possibilities, so this level is not possible at this
+        // position
+        removeKnightWithMoves(row, col, level);
+        return false;
+    }
+    
     /**
      * Count the number of solutions.
      *
@@ -491,8 +578,8 @@ public class KnightBoard {
             rows = Integer.parseInt(args[0]);
             cols = Integer.parseInt(args[1]);
         } else {
-            rows = 8;
-            cols = 8;
+            rows = 25;
+            cols = 25;
         }
 
         long time;
