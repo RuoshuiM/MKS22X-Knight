@@ -102,7 +102,7 @@ public class KnightBoard {
             }
             return col + dcol[order[i]];
         }
-        
+
 //        /* Not Used. Manual sorting instead.
         public void sortMoveOrder() {
           // System.out.println("Sorting...");
@@ -270,7 +270,7 @@ public class KnightBoard {
      * @param startingCol
      * @returns true when the board is solvable from the specified starting position
      */
-    public boolean solve(int startingRow, int startingCol) {
+    public boolean slowSolve(int startingRow, int startingCol) {
         checkBoard();
         checkInputs(startingRow, startingCol);
         return nextMove(startingRow, startingCol, 1);
@@ -333,7 +333,7 @@ public class KnightBoard {
         return false;
     }
 
-    public boolean fastSolve(int row, int col) {
+    public boolean solve(int row, int col) {
         checkBoard();
         checkInputs(row, col);
         fillMoves();
@@ -391,7 +391,7 @@ public class KnightBoard {
                 int corCol = cors.getCol(i);
                 if (isCorInBound(corRow, corCol)) {
                     int [] element = new int[] {i, moves[corRow][corCol]};
-                    
+
                     if (order.size() == 0) {
                         order.add(element);
                     } else {
@@ -427,7 +427,7 @@ public class KnightBoard {
 //                    }
 //                }
 //            }
-            
+
             for (int[] pos : order) {
                 int i = pos[0];
                 nextRow = cors.getRow(i);
@@ -450,7 +450,7 @@ public class KnightBoard {
         removeKnightWithMoves(row, col, level);
         return false;
     }
-    
+
     /**
      * Count the number of solutions.
      *
@@ -595,7 +595,7 @@ public class KnightBoard {
 
         time = System.nanoTime();
        // System.out.println(kb.solve(0, 0));
-        System.out.println(kb.fastSolve(0, 0));
+        System.out.println(kb.solve(1, 3));
         System.out.println(System.nanoTime() - time);
 
 
